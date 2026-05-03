@@ -3,8 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getGroup, getBalances, settleDebt } from "../api/groups";
 import { createExpense, getExpenses } from "../api/expenses";
+import { sendInvite } from "../api/invites";
 
 export default function GroupPage() {
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
   const { id } = useParams();
   const groupId = Number(id);
   const navigate = useNavigate();
@@ -59,6 +62,14 @@ export default function GroupPage() {
     );
   };
 
+  const { mutate: invite, isPending: inviting } = useMutation({
+    mutationFn: (email: string) => sendInvite(groupId, email),
+    onSuccess: () => {
+      setInviteEmail("");
+      setShowInvite(false);
+    },
+  });
+
   if (groupLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -104,6 +115,39 @@ export default function GroupPage() {
               </span>
             ))}
           </div>
+        </div>
+
+        {/* Invite Member */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              Invite member
+            </h2>
+            <button
+              onClick={() => setShowInvite(!showInvite)}
+              className="text-sm text-black font-medium"
+            >
+              {showInvite ? "Cancel" : "+ Invite"}
+            </button>
+          </div>
+          {showInvite && (
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="shir@example.com"
+              />
+              <button
+                onClick={() => invite(inviteEmail)}
+                disabled={inviting || !inviteEmail}
+                className="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+              >
+                {inviting ? "..." : "Send"}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Balances */}

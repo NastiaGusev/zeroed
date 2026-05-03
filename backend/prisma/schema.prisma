@@ -34,6 +34,7 @@ model Group {
   members  GroupMember[]
   expenses Expense[]
   settlements Settlement[]
+  invites GroupInvite[]
 }
 
 model GroupMember {
@@ -84,4 +85,20 @@ model Settlement {
   group      Group @relation(fields: [groupId], references: [id])
   fromUser   User  @relation("SettlementFrom", fields: [fromUserId], references: [id])
   toUser     User  @relation("SettlementTo", fields: [toUserId], references: [id])
+}
+
+model GroupInvite {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  email     String
+  status    InviteStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  group     Group @relation(fields: [groupId], references: [id])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }

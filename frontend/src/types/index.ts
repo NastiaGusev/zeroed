@@ -41,3 +41,12 @@ export interface Transaction {
   to: { id: number; name: string };
   amount: number;
 }
+
+export interface GroupInvite {
+  id: number;
+  email: string;
+  group: {
+    id: number;
+    name: string;
+  };
+}

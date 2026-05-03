@@ -1,40 +1,50 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createGroup } from "../api/groups";
-import { getUserGroups } from "../api/groups";
+import { createGroup, getUserGroups } from "../api/groups";
+import { getPendingInvites, acceptInvite, declineInvite } from "../api/invites";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [newGroupName, setNewGroupName] = useState("");
-  const [groupIdInput, setGroupIdInput] = useState("");
 
   const { data: userGroups } = useQuery({
     queryKey: ["userGroups"],
     queryFn: getUserGroups,
   });
 
+  const { data: pendingInvites } = useQuery({
+    queryKey: ["pendingInvites"],
+    queryFn: getPendingInvites,
+  });
+
   const { mutate: createNewGroup, isPending } = useMutation({
     mutationFn: (name: string) => createGroup(name),
     onSuccess: (group) => {
       queryClient.invalidateQueries({ queryKey: ["userGroups"] });
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
       setNewGroupName("");
       navigate(`/groups/${group.id}`);
     },
   });
 
-  const handleCreate = () => {
-    if (newGroupName.trim()) {
-      createNewGroup(newGroupName.trim());
-    }
-  };
+  const { mutate: accept } = useMutation({
+    mutationFn: (inviteId: number) => acceptInvite(inviteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pendingInvites"] });
+      queryClient.invalidateQueries({ queryKey: ["userGroups"] });
+    },
+  });
 
-  const handleJoin = () => {
-    if (groupIdInput.trim()) {
-      navigate(`/groups/${groupIdInput.trim()}`);
-    }
+  const { mutate: decline } = useMutation({
+    mutationFn: (inviteId: number) => declineInvite(inviteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pendingInvites"] });
+    },
+  });
+
+  const handleCreate = () => {
+    if (newGroupName.trim()) createNewGroup(newGroupName.trim());
   };
 
   const handleLogout = () => {
@@ -55,6 +65,41 @@ export default function DashboardPage() {
             Logout
           </button>
         </div>
+
+        {/* Pending Invites */}
+        {pendingInvites && pendingInvites.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Pending Invites
+            </h2>
+            <div className="space-y-3">
+              {pendingInvites.map((invite) => (
+                <div
+                  key={invite.id}
+                  className="flex items-center justify-between"
+                >
+                  <p className="font-medium text-gray-900">
+                    {invite.group.name}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => accept(invite.id)}
+                      className="text-sm bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => decline(invite.id)}
+                      className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-200 transition"
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* My Groups */}
         {userGroups && userGroups.length > 0 && (
@@ -80,7 +125,7 @@ export default function DashboardPage() {
         )}
 
         {/* Create Group */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
+        <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Create a group
           </h2>
@@ -99,29 +144,6 @@ export default function DashboardPage() {
               className="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
             >
               {isPending ? "..." : "Create"}
-            </button>
-          </div>
-        </div>
-
-        {/* Join Group */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Open a group by ID
-          </h2>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={groupIdInput}
-              onChange={(e) => setGroupIdInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleJoin()}
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-              placeholder="Group ID"
-            />
-            <button
-              onClick={handleJoin}
-              className="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition"
-            >
-              Open
             </button>
           </div>
         </div>
