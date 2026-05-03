@@ -57,4 +57,9 @@ export class GroupsController {
   deleteGroup(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.deleteGroup(id);
   }
+
+  @Get()
+  getUserGroups(@Req() req: any) {
+    return this.groupsService.getUserGroups(req.user.sub);
+  }
 }

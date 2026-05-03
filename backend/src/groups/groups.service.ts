@@ -75,4 +75,13 @@ export class GroupsService {
       where: { id: groupId },
     });
   }
+
+  async getUserGroups(userId: number) {
+    return this.prisma.groupMember.findMany({
+      where: { userId },
+      include: {
+        group: true,
+      },
+    });
+  }
 }
