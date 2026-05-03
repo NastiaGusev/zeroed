@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { calculateMinimumTransactions } from './balance.calculator';
 
 @Injectable()
 export class ExpensesService {
@@ -88,29 +89,7 @@ export class ExpensesService {
     }
 
     // Step 3 — greedily match debtors to creditors
-    const transactions: { from: number; to: number; amount: number }[] = [];
-
-    let i = 0; // creditor index
-    let j = 0; // debtor index
-
-    while (i < creditors.length && j < debtors.length) {
-      const creditor = creditors[i];
-      const debtor = debtors[j];
-
-      const settlement = Math.min(creditor.amount, debtor.amount);
-
-      transactions.push({
-        from: debtor.userId,
-        to: creditor.userId,
-        amount: settlement,
-      });
-
-      creditor.amount -= settlement;
-      debtor.amount -= settlement;
-
-      if (creditor.amount === 0) i++;
-      if (debtor.amount === 0) j++;
-    }
+    const transactions = calculateMinimumTransactions(balances);
 
     // Step 4 — fetch user names for readable output
     const userIds = [
