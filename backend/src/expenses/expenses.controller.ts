@@ -49,4 +49,12 @@ export class ExpensesController {
   deleteExpense(@Param('expenseId', ParseIntPipe) expenseId: number) {
     return this.expensesService.deleteExpense(expenseId);
   }
+
+  @Post(':expenseId/members')
+  addMemberToExpense(
+    @Param('expenseId', ParseIntPipe) expenseId: number,
+    @Body('userId') userId: number,
+  ) {
+    return this.expensesService.addMemberToExpense(expenseId, userId);
+  }
 }

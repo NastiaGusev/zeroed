@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
@@ -54,6 +55,14 @@ export class GroupsService {
     });
   }
 
+  async settleAll(groupId: number) {
+    // Mark group as settled
+    return this.prisma.group.update({
+      where: { id: groupId },
+      data: { settledAt: new Date() },
+    });
+  }
+
   async settleDebt(
     groupId: number,
     fromUserId: number,
@@ -71,9 +80,15 @@ export class GroupsService {
   }
 
   async deleteGroup(groupId: number) {
-    return this.prisma.group.delete({
-      where: { id: groupId },
+    // Delete in correct order — children before parents
+    await this.prisma.settlement.deleteMany({ where: { groupId } });
+    await this.prisma.expenseSplit.deleteMany({
+      where: { expense: { groupId } },
     });
+    await this.prisma.expense.deleteMany({ where: { groupId } });
+    await this.prisma.groupInvite.deleteMany({ where: { groupId } });
+    await this.prisma.groupMember.deleteMany({ where: { groupId } });
+    return this.prisma.group.delete({ where: { id: groupId } });
   }
 
   async getUserGroups(userId: number) {

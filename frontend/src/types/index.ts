@@ -9,8 +9,22 @@ export interface Group {
   name: string;
   ownerId: number;
   createdAt: string;
+  settledAt: string | null;
   members: GroupMember[];
   expenses: Expense[];
+}
+
+export interface UserGroup {
+  id: number;
+  userId: number;
+  groupId: number;
+  group: {
+    id: number;
+    name: string;
+    settledAt: string | null;
+    ownerId: number;
+    createdAt: string;
+  };
 }
 
 export interface GroupMember {

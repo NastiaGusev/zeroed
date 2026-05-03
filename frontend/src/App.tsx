@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import GroupPage from "./pages/GroupPage";
+import CreateGroupPage from "./pages/CreateGroupPage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("token");
@@ -31,6 +32,14 @@ function App() {
         }
       />
       <Route path="*" element={<Navigate to="/dashboard" />} />
+      <Route
+        path="/groups/new"
+        element={
+          <PrivateRoute>
+            <CreateGroupPage />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }

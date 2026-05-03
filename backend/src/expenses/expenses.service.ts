@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { calculateMinimumTransactions } from './balance.calculator';
 
@@ -61,6 +61,29 @@ export class ExpensesService {
   async deleteExpense(expenseId: number) {
     return this.prisma.expense.delete({
       where: { id: expenseId },
+    });
+  }
+
+  async addMemberToExpense(expenseId: number, userId: number) {
+    const expense = await this.prisma.expense.findUnique({
+      where: { id: expenseId },
+      include: { splits: true },
+    });
+
+    if (!expense) throw new NotFoundException('Expense not found');
+
+    const newSplitCount = expense.splits.length + 1;
+    const newAmount = expense.amount / newSplitCount;
+
+    // Update all existing splits with new amount
+    await this.prisma.expenseSplit.updateMany({
+      where: { expenseId },
+      data: { amount: newAmount },
+    });
+
+    // Add new split
+    return this.prisma.expenseSplit.create({
+      data: { expenseId, userId, amount: newAmount },
     });
   }
 

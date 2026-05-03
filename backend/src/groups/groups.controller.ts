@@ -53,6 +53,11 @@ export class GroupsController {
     );
   }
 
+  @Post(':id/settle-all')
+  settleAll(@Param('id', ParseIntPipe) id: number) {
+    return this.groupsService.settleAll(id);
+  }
+
   @Delete(':id')
   deleteGroup(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.deleteGroup(id);

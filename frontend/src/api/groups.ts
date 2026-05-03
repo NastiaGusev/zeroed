@@ -1,5 +1,5 @@
 import client from "./client";
-import type { Group, Transaction } from "../types";
+import type { Group, Transaction, UserGroup } from "../types";
 
 export const createGroup = async (name: string) => {
   const res = await client.post("/groups", { name });
@@ -33,7 +33,17 @@ export const settleDebt = async (
   return res.data;
 };
 
+export const deleteGroup = async (groupId: number) => {
+  const res = await client.delete(`/groups/${groupId}`);
+  return res.data;
+};
+
+export const settleAll = async (groupId: number) => {
+  const res = await client.post(`/groups/${groupId}/settle-all`);
+  return res.data;
+};
+
 export const getUserGroups = async () => {
   const res = await client.get("/groups");
-  return res.data as { id: number; group: Group }[];
+  return res.data as UserGroup[];
 };
