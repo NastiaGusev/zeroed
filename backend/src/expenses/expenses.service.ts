@@ -58,6 +58,12 @@ export class ExpensesService {
     });
   }
 
+  async deleteExpense(expenseId: number) {
+    return this.prisma.expense.delete({
+      where: { id: expenseId },
+    });
+  }
+
   async getGroupBalances(groupId: number) {
     // Step 1 — calculate net balance per user
     const expenses = await this.prisma.expense.findMany({
@@ -74,6 +80,18 @@ export class ExpensesService {
       for (const split of expense.splits) {
         balances[split.userId] = (balances[split.userId] ?? 0) - split.amount;
       }
+    }
+
+    // Factor in settlements
+    const settlements = await this.prisma.settlement.findMany({
+      where: { groupId },
+    });
+
+    for (const settlement of settlements) {
+      balances[settlement.fromUserId] =
+        (balances[settlement.fromUserId] ?? 0) + settlement.amount;
+      balances[settlement.toUserId] =
+        (balances[settlement.toUserId] ?? 0) - settlement.amount;
     }
 
     // Step 2 — separate into creditors and debtors

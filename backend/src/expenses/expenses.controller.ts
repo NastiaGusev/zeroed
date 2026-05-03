@@ -13,6 +13,7 @@ import {
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Delete } from '@nestjs/common';
 
 @UseGuards(JwtAuthGuard)
 @Controller('groups/:groupId/expenses')
@@ -42,5 +43,10 @@ export class ExpensesController {
   @Get('balances')
   getBalances(@Param('groupId', ParseIntPipe) groupId: number) {
     return this.expensesService.getGroupBalances(groupId);
+  }
+
+  @Delete(':expenseId')
+  deleteExpense(@Param('expenseId', ParseIntPipe) expenseId: number) {
+    return this.expensesService.deleteExpense(expenseId);
   }
 }

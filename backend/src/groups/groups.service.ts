@@ -53,4 +53,26 @@ export class GroupsService {
       data: { groupId, userId },
     });
   }
+
+  async settleDebt(
+    groupId: number,
+    fromUserId: number,
+    toUserId: number,
+    amount: number,
+  ) {
+    return this.prisma.settlement.create({
+      data: {
+        groupId,
+        fromUserId,
+        toUserId,
+        amount,
+      },
+    });
+  }
+
+  async deleteGroup(groupId: number) {
+    return this.prisma.group.delete({
+      where: { id: groupId },
+    });
+  }
 }
