@@ -53,7 +53,7 @@ export default function CreateGroupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

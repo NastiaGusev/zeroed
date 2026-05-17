@@ -25,7 +25,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gray-50 flex items-center justify-center px-4 overflow-y-auto">
       <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Zeroed 💸</h1>
         <p className="text-gray-500 mb-8">Split expenses, stay friends.</p>

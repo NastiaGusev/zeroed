@@ -4,8 +4,14 @@ export const register = async (
   name: string,
   email: string,
   password: string,
+  phone?: string,
 ) => {
-  const res = await client.post("/auth/register", { name, email, password });
+  const res = await client.post("/auth/register", {
+    name,
+    email,
+    password,
+    phone: phone || undefined,
+  });
   return res.data as { access_token: string };
 };
 

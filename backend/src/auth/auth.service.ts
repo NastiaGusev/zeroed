@@ -14,22 +14,36 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
-  async register(name: string, email: string, password: string) {
-    // Check if user already exists
-    const existing = await this.prisma.user.findUnique({ where: { email } });
-    if (existing) {
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    phone?: string,
+  ) {
+    // Check if email already exists
+    const existingEmail = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (existingEmail) {
       throw new ConflictException('Email already in use');
     }
 
-    // Hash the password — never store plain text
+    // Check if phone already exists (only if provided)
+    if (phone) {
+      const existingPhone = await this.prisma.user.findUnique({
+        where: { phone },
+      });
+      if (existingPhone) {
+        throw new ConflictException('Phone number already in use');
+      }
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create the user in the database
     const user = await this.prisma.user.create({
-      data: { name, email, passwordHash },
+      data: { name, email, passwordHash, phone: phone ?? null },
     });
 
-    // Return a JWT token
     return this.signToken(user.id, user.email);
   }
 
