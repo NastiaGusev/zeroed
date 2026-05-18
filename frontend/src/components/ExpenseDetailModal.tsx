@@ -1,5 +1,6 @@
 import type { Expense, GroupMember } from "../types";
 import Modal from "./Modal";
+import { formatAmount } from "../utils/format";
 
 interface Props {
   expense: Expense;
@@ -31,7 +32,7 @@ export default function ExpenseDetailModal({
         <div className="flex items-center justify-between">
           <span className="text-gray-500">Total amount</span>
           <span className="text-xl font-bold text-gray-900">
-            ₪{expense.amount}
+            ₪{formatAmount(expense.amount)}
           </span>
         </div>
 

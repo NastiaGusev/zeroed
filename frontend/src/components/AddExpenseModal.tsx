@@ -26,6 +26,22 @@ export default function AddExpenseModal({
   toggleMember,
   members,
 }: Props) {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Strip everything except digits and one decimal point
+    const raw = e.target.value.replace(/[^0-9.]/g, "");
+    // Prevent multiple decimal points
+    const parts = raw.split(".");
+    const cleaned =
+      parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : raw;
+    setAmount(cleaned);
+  };
+
+  const displayAmount = amount
+    ? Number(amount.replace(/,/g, "")).toLocaleString("en-US", {
+        maximumFractionDigits: 2,
+      })
+    : "";
+
   return (
     <Modal title="Add expense" onClose={onClose}>
       <div className="space-y-4">
@@ -37,13 +53,19 @@ export default function AddExpenseModal({
           placeholder="Description (e.g. Dinner)"
           autoFocus
         />
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          placeholder="Amount (₪)"
-        />
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+            ₪
+          </span>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={displayAmount}
+            onChange={handleAmountChange}
+            className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            placeholder="0"
+          />
+        </div>
         <div>
           <p className="text-sm text-gray-500 mb-2">Split between:</p>
           <div className="flex flex-wrap gap-2">

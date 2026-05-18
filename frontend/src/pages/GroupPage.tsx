@@ -14,6 +14,7 @@ import InviteModal from "../components/InviteModal";
 import AddExpenseModal from "../components/AddExpenseModal";
 import ExpenseDetailModal from "../components/ExpenseDetailModal";
 import type { Transaction } from "../types";
+import { formatAmount } from "../utils/format";
 
 export default function GroupPage() {
   const { id } = useParams();
@@ -174,7 +175,9 @@ export default function GroupPage() {
                       {t.from.name}
                     </span>
                     {" owes you "}
-                    <span className="font-semibold">₪{t.amount}</span>
+                    <span className="font-semibold">
+                      ₪{formatAmount(t.amount)}
+                    </span>
                   </p>
                 ))}
                 {myDebts.map((t: Transaction, i: number) => (
@@ -183,7 +186,9 @@ export default function GroupPage() {
                     <span className="font-medium text-red-500">
                       {t.to.name}
                     </span>{" "}
-                    <span className="font-semibold">₪{t.amount}</span>
+                    <span className="font-semibold">
+                      ₪{formatAmount(t.amount)}
+                    </span>
                   </p>
                 ))}
               </div>
@@ -250,7 +255,7 @@ export default function GroupPage() {
                     </p>
                   </div>
                   <p className="font-semibold text-gray-900">
-                    ₪{expense.amount}
+                    ₪{formatAmount(expense.amount)}
                   </p>
                 </div>
               ))}
