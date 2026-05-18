@@ -69,13 +69,12 @@
   "group_name_placeholder": "Поездка в Барселону",
   "invalid_credentials": "Неверный email или пароль",
   "something_went_wrong": "Что-то пошло не так. Попробуйте снова.",
-
   "edit_expense": "Редактировать",
   "adding": "Добавляем...",
-
   "amount_placeholder": "Сумма (₪)",
   "send_invite": "Отправить приглашение",
   "sending": "Отправляем...",
   "group_not_found": "Группа не найдена",
-  "loading": "Загрузка..."
+  "loading": "Загрузка...",
+  "language": "Язык"
 }

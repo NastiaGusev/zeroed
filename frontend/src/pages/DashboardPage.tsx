@@ -4,9 +4,9 @@ import { getUserGroups } from "../api/groups";
 import { getPendingInvites, acceptInvite, declineInvite } from "../api/invites";
 import { getMe } from "../api/auth";
 import { useState } from "react";
-import LanguageSwitcher from "../components/LanguageSwitcher";
 import Modal from "../components/Modal";
 import { useTranslation } from "react-i18next";
+import AccountMenu from "../components/AccountMenu";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -54,26 +54,43 @@ export default function DashboardPage() {
   };
 
   const [showFilter, setShowFilter] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
 
   return (
     <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
       <div className="max-w-lg mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold text-gray-900">Zeroed 💸</h1>
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
+          <h1 className="text-2xl font-bold text-gray-900">{t("app_name")}</h1>
+          <div className="relative">
             <button
-              onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-gray-900"
+              onClick={() => setShowAccount((prev) => !prev)}
+              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center text-gray-600"
             >
-              {t("logout")}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             </button>
+            {showAccount && (
+              <AccountMenu
+                name={me?.name ?? ""}
+                email={me?.email ?? ""}
+                onLogout={handleLogout}
+                onClose={() => setShowAccount(false)}
+              />
+            )}
           </div>
         </div>
-        <p className="text-gray-500 mb-8">
-          {t("welcome_back", { name: me?.name })}
-        </p>
 
         {/* Pending Invites */}
         {pendingInvites && pendingInvites.length > 0 && (
