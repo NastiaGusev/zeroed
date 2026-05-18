@@ -7,14 +7,18 @@ import {
   getExpenses,
   deleteExpense,
   addMemberToExpense,
+  updateExpense,
 } from "../api/expenses";
 import { sendInvite } from "../api/invites";
 import { getMe } from "../api/auth";
-import InviteModal from "../components/InviteModal";
-import AddExpenseModal from "../components/AddExpenseModal";
-import ExpenseDetailModal from "../components/ExpenseDetailModal";
-import type { Transaction } from "../types";
-import { formatAmount } from "../utils/format";
+import InviteModal from "../components/invite/InviteModal";
+import AddExpenseModal from "../components/expense/AddExpenseModal";
+import ExpenseDetailModal from "../components/expense/ExpenseDetailModal";
+import GroupHeader from "../components/group/GroupHeader";
+import GroupBalances from "../components/group/GroupBalances";
+import GroupMembers from "../components/group/GroupMembers";
+import GroupExpenses from "../components/group/GroupExpenses";
+import { updateGroup } from "../api/groups";
 
 export default function GroupPage() {
   const { id } = useParams();
@@ -118,6 +122,33 @@ export default function GroupPage() {
     );
   };
 
+  const { mutate: updateExpenseMutation, isPending: updatingExpense } =
+    useMutation({
+      mutationFn: ({
+        expenseId,
+        description,
+        memberIds,
+        amount,
+      }: {
+        expenseId: number;
+        description: string;
+        memberIds: number[];
+        amount: number;
+      }) => updateExpense(groupId, expenseId, description, amount, memberIds),
+      onSuccess: () => invalidateExpenses(),
+    });
+
+  const [isEditingGroup, setIsEditingGroup] = useState(false);
+  const [editGroupName, setEditGroupName] = useState(group?.name ?? "");
+
+  const { mutate: saveGroupName, isPending: savingGroupName } = useMutation({
+    mutationFn: () => updateGroup(groupId, editGroupName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["group", groupId] });
+      setIsEditingGroup(false);
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
@@ -139,147 +170,50 @@ export default function GroupPage() {
   return (
     <div className="fixed inset-0 bg-gray-50 overflow-y-auto overscroll-none">
       <div className="max-w-lg mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="text-gray-400 hover:text-gray-900"
-          >
-            ←
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900 flex-1">
-            {group.name}
-          </h1>
-          {isSettled && (
-            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-              Settled ✅
-            </span>
-          )}
-        </div>
+        <GroupHeader
+          name={group.name}
+          isSettled={isSettled}
+          isOwner={me?.id === group.ownerId}
+          isEditing={isEditingGroup}
+          editName={editGroupName}
+          setEditName={setEditGroupName}
+          onEditStart={() => {
+            setEditGroupName(group.name);
+            setIsEditingGroup(true);
+          }}
+          onSave={() => saveGroupName()}
+          onCancel={() => setIsEditingGroup(false)}
+          onDelete={() => {
+            if (confirm("Delete this group? This cannot be undone.")) {
+              removeGroup();
+            }
+          }}
+          isSaving={savingGroupName}
+          onBack={() => navigate("/dashboard")}
+        />
 
-        {/* My Balance — shown only after settled */}
         {isSettled && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              My Balance
-            </h2>
-            {totalOwedToMe === 0 && totalIOwe === 0 ? (
-              <p className="text-green-600 font-medium">
-                You were zeroed out! ✅
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {myOwed.map((t: Transaction, i: number) => (
-                  <p key={i} className="text-gray-700">
-                    <span className="font-medium text-green-600">
-                      {t.from.name}
-                    </span>
-                    {" owes you "}
-                    <span className="font-semibold">
-                      ₪{formatAmount(t.amount)}
-                    </span>
-                  </p>
-                ))}
-                {myDebts.map((t: Transaction, i: number) => (
-                  <p key={i} className="text-gray-700">
-                    {"You owe "}
-                    <span className="font-medium text-red-500">
-                      {t.to.name}
-                    </span>{" "}
-                    <span className="font-semibold">
-                      ₪{formatAmount(t.amount)}
-                    </span>
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
+          <GroupBalances
+            myOwed={myOwed}
+            myDebts={myDebts}
+            totalOwedToMe={totalOwedToMe}
+            totalIOwe={totalIOwe}
+          />
         )}
 
-        {/* Members */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              Members
-            </h2>
-            {!isSettled && (
-              <button
-                onClick={() => setShowInvite(true)}
-                className="text-xs font-medium px-3 py-1 rounded-full border border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 transition"
-              >
-                + Invite
-              </button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {group.members.map((member) => (
-              <span
-                key={member.id}
-                className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
-              >
-                {member.user.name}
-              </span>
-            ))}
-          </div>
-        </div>
+        <GroupMembers
+          members={group.members}
+          isSettled={isSettled}
+          onInvite={() => setShowInvite(true)}
+        />
 
-        {/* Expenses */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              Expenses
-            </h2>
-            {!isSettled && (
-              <button
-                onClick={() => setShowAddExpense(true)}
-                className="text-xs font-medium px-3 py-1 rounded-full border border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 transition"
-              >
-                + Add
-              </button>
-            )}
-          </div>
-          {expenses && expenses.length > 0 ? (
-            <div className="space-y-3">
-              {expenses.map((expense) => (
-                <div
-                  key={expense.id}
-                  onClick={() => setSelectedExpense(expense.id)}
-                  className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 rounded-lg px-2 -mx-2 transition"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {expense.description}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Paid by {expense.paidBy.name}
-                    </p>
-                  </div>
-                  <p className="font-semibold text-gray-900">
-                    ₪{formatAmount(expense.amount)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-400 text-sm">No expenses yet.</p>
-          )}
-        </div>
+        <GroupExpenses
+          expenses={expenses ?? []}
+          isSettled={isSettled}
+          onAdd={() => setShowAddExpense(true)}
+          onSelect={(id) => setSelectedExpense(id)}
+        />
 
-        {/* Delete Group */}
-        {me?.id === group.ownerId && (
-          <button
-            onClick={() => {
-              if (confirm("Delete this group? This cannot be undone.")) {
-                removeGroup();
-              }
-            }}
-            className="w-full mt-2 text-sm text-red-400 hover:text-red-600 py-2"
-          >
-            Delete group
-          </button>
-        )}
-
-        {/* Settle Up */}
         {!isSettled && balances && balances.length > 0 && (
           <button
             onClick={() => {
@@ -299,7 +233,6 @@ export default function GroupPage() {
         )}
       </div>
 
-      {/* Modals */}
       {showInvite && (
         <InviteModal
           email={inviteEmail}
@@ -321,7 +254,12 @@ export default function GroupPage() {
           members={group.members}
           onAdd={() => addExpense()}
           isPending={addingExpense}
-          onClose={() => setShowAddExpense(false)}
+          onClose={() => {
+            setShowAddExpense(false);
+            setDescription("");
+            setAmount("");
+            setSelectedMembers([]);
+          }}
         />
       )}
 
@@ -336,6 +274,10 @@ export default function GroupPage() {
           onAddToSplit={(expenseId, userId) =>
             addToSplit({ expenseId, userId })
           }
+          onSaveEdit={(expenseId, description, memberIds, amount) =>
+            updateExpenseMutation({ expenseId, description, memberIds, amount })
+          }
+          isPendingEdit={updatingExpense}
         />
       )}
     </div>

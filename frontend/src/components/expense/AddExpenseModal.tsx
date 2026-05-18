@@ -1,5 +1,5 @@
-import type { GroupMember } from "../types";
-import Modal from "./Modal";
+import type { GroupMember } from "../../types";
+import Modal from "../Modal";
 
 interface Props {
   onClose: () => void;
@@ -12,6 +12,7 @@ interface Props {
   selectedMembers: number[];
   toggleMember: (id: number) => void;
   members: GroupMember[];
+  title?: string;
 }
 
 export default function AddExpenseModal({
@@ -25,6 +26,7 @@ export default function AddExpenseModal({
   selectedMembers,
   toggleMember,
   members,
+  title,
 }: Props) {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Strip everything except digits and one decimal point
@@ -43,7 +45,7 @@ export default function AddExpenseModal({
     : "";
 
   return (
-    <Modal title="Add expense" onClose={onClose}>
+    <Modal title={title ?? "Add expense"} onClose={onClose}>
       <div className="space-y-4">
         <input
           type="text"
@@ -91,7 +93,7 @@ export default function AddExpenseModal({
           }
           className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
         >
-          {isPending ? "Adding..." : "Add expense"}
+          {isPending ? "Saving..." : title ? "Save changes" : "Add expense"}
         </button>
       </div>
     </Modal>

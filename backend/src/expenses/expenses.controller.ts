@@ -13,7 +13,7 @@ import {
 import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Delete } from '@nestjs/common';
+import { Delete, Patch } from '@nestjs/common';
 
 @UseGuards(JwtAuthGuard)
 @Controller('groups/:groupId/expenses')
@@ -56,5 +56,18 @@ export class ExpensesController {
     @Body('userId') userId: number,
   ) {
     return this.expensesService.addMemberToExpense(expenseId, userId);
+  }
+
+  @Patch(':expenseId')
+  updateExpense(
+    @Param('expenseId', ParseIntPipe) expenseId: number,
+    @Body() body: { description: string; amount: number; memberIds: number[] },
+  ) {
+    return this.expensesService.updateExpense(
+      expenseId,
+      body.description,
+      body.amount,
+      body.memberIds,
+    );
   }
 }

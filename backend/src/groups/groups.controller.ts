@@ -14,7 +14,7 @@ import { GroupsService } from './groups.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SettleDebtDto } from './dto/settle-debt.dto';
-import { Delete } from '@nestjs/common';
+import { Delete, Patch } from '@nestjs/common';
 
 @UseGuards(JwtAuthGuard)
 @Controller('groups')
@@ -66,5 +66,13 @@ export class GroupsController {
   @Get()
   getUserGroups(@Req() req: any) {
     return this.groupsService.getUserGroups(req.user.sub);
+  }
+
+  @Patch(':id')
+  updateGroup(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('name') name: string,
+  ) {
+    return this.groupsService.updateGroup(id, name);
   }
 }

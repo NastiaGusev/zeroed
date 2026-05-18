@@ -38,6 +38,11 @@ export const deleteGroup = async (groupId: number) => {
   return res.data;
 };
 
+export const updateGroup = async (groupId: number, name: string) => {
+  const res = await client.patch(`/groups/${groupId}`, { name });
+  return res.data;
+};
+
 export const settleAll = async (groupId: number) => {
   const res = await client.post(`/groups/${groupId}/settle-all`);
   return res.data;

@@ -36,3 +36,18 @@ export const addMemberToExpense = async (
   );
   return res.data;
 };
+
+export const updateExpense = async (
+  groupId: number,
+  expenseId: number,
+  description: string,
+  amount: number,
+  memberIds: number[],
+) => {
+  const res = await client.patch(`/groups/${groupId}/expenses/${expenseId}`, {
+    description,
+    amount,
+    memberIds,
+  });
+  return res.data;
+};

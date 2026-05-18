@@ -99,4 +99,11 @@ export class GroupsService {
       },
     });
   }
+
+  async updateGroup(groupId: number, name: string) {
+    return this.prisma.group.update({
+      where: { id: groupId },
+      data: { name },
+    });
+  }
 }

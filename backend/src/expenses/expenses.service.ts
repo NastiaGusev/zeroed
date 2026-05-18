@@ -59,9 +59,8 @@ export class ExpensesService {
   }
 
   async deleteExpense(expenseId: number) {
-    return this.prisma.expense.delete({
-      where: { id: expenseId },
-    });
+    await this.prisma.expenseSplit.deleteMany({ where: { expenseId } });
+    return this.prisma.expense.delete({ where: { id: expenseId } });
   }
 
   async addMemberToExpense(expenseId: number, userId: number) {
@@ -155,5 +154,37 @@ export class ExpensesService {
       to: { id: t.to, name: userMap[t.to] },
       amount: t.amount,
     }));
+  }
+
+  async updateExpense(
+    expenseId: number,
+    description: string,
+    amount: number,
+    memberIds: number[],
+  ) {
+    const splitAmount = amount / memberIds.length;
+
+    // Delete existing splits and recreate
+    await this.prisma.expenseSplit.deleteMany({ where: { expenseId } });
+
+    return this.prisma.expense.update({
+      where: { id: expenseId },
+      data: {
+        description,
+        amount,
+        splits: {
+          create: memberIds.map((userId) => ({
+            userId,
+            amount: splitAmount,
+          })),
+        },
+      },
+      include: {
+        splits: {
+          include: { user: { select: { id: true, name: true, email: true } } },
+        },
+        paidBy: { select: { id: true, name: true, email: true } },
+      },
+    });
   }
 }

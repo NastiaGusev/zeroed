@@ -3,11 +3,10 @@ import { useEffect } from "react";
 interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
 }
 
 export default function Modal({ onClose, children, title }: ModalProps) {
-  // Close on escape key
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
