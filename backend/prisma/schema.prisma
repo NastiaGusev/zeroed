@@ -54,6 +54,7 @@ model Expense {
   id          Int      @id @default(autoincrement())
   description String
   amount      Float
+  currency    String   @default("ILS")
   date        DateTime @default(now())
 
   groupId  Int

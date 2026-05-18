@@ -1,6 +1,7 @@
 import type { Expense } from "../../types";
 import { formatAmount } from "../../utils/format";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "../../constants/currencies";
 
 interface Props {
   expenses: Expense[];
@@ -49,7 +50,8 @@ export default function GroupExpenses({
                 </p>
               </div>
               <p className="font-semibold text-gray-900">
-                ₪{formatAmount(expense.amount)}
+                {getCurrencySymbol(expense.currency)}
+                {formatAmount(expense.amount)}
               </p>
             </div>
           ))}

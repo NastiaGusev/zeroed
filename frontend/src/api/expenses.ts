@@ -6,13 +6,15 @@ export const createExpense = async (
   description: string,
   amount: number,
   memberIds: number[],
+  currency: string,
 ) => {
   const res = await client.post(`/groups/${groupId}/expenses`, {
     description,
     amount,
     memberIds,
+    currency,
   });
-  return res.data as Expense;
+  return res.data;
 };
 
 export const getExpenses = async (groupId: number) => {

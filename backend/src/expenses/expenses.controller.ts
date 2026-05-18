@@ -32,6 +32,7 @@ export class ExpensesController {
       body.description,
       body.amount,
       body.memberIds,
+      body.currency,
     );
   }
 

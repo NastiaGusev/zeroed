@@ -1,6 +1,7 @@
 import type { GroupMember } from "../../types";
 import Modal from "../Modal";
 import { useTranslation } from "react-i18next";
+import { CURRENCIES, getCurrencySymbol } from "../../constants/currencies";
 
 interface Props {
   onClose: () => void;
@@ -10,6 +11,8 @@ interface Props {
   setDescription: (v: string) => void;
   amount: string;
   setAmount: (v: string) => void;
+  currency: string;
+  setCurrency: (v: string) => void;
   selectedMembers: number[];
   toggleMember: (id: number) => void;
   members: GroupMember[];
@@ -23,6 +26,8 @@ export default function AddExpenseModal({
   setDescription,
   amount,
   setAmount,
+  currency,
+  setCurrency,
   selectedMembers,
   toggleMember,
   members,
@@ -30,9 +35,7 @@ export default function AddExpenseModal({
   const { t } = useTranslation();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Strip everything except digits and one decimal point
     const raw = e.target.value.replace(/[^0-9.]/g, "");
-    // Prevent multiple decimal points
     const parts = raw.split(".");
     const cleaned =
       parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : raw;
@@ -56,19 +59,51 @@ export default function AddExpenseModal({
           placeholder={t("description_placeholder")}
           autoFocus
         />
-        <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
-            ₪
-          </span>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={displayAmount}
-            onChange={handleAmountChange}
-            className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-            placeholder="0"
-          />
+
+        {/* Amount + Currency */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+              {getCurrencySymbol(currency)}
+            </span>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={displayAmount}
+              onChange={handleAmountChange}
+              className="w-full border border-gray-300 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="0"
+            />
+          </div>
+          <div className="relative">
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="appearance-none border border-gray-300 rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-black text-sm text-gray-700 bg-white w-24"
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
         </div>
+
         <div>
           <p className="text-sm text-gray-500 mb-2">{t("split_between")}</p>
           <div className="flex flex-wrap gap-2">
@@ -87,6 +122,7 @@ export default function AddExpenseModal({
             ))}
           </div>
         </div>
+
         <button
           onClick={onAdd}
           disabled={

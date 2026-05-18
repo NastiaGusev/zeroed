@@ -3,6 +3,7 @@ import type { Expense, GroupMember } from "../../types";
 import Modal from "../Modal";
 import { formatAmount } from "../../utils/format";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "../../constants/currencies";
 
 interface Props {
   expense: Expense;
@@ -105,7 +106,8 @@ export default function ExpenseDetailModal({
         <div className="flex items-center justify-between">
           <span className="text-gray-500">{t("total_amount")}</span>
           <span className="text-xl font-bold text-gray-900">
-            ₪{formatAmount(expense.amount)}
+            {getCurrencySymbol(expense.currency)}
+            {formatAmount(expense.amount)}
           </span>
         </div>
 
@@ -132,7 +134,7 @@ export default function ExpenseDetailModal({
             <p className="text-sm text-gray-500">{t("split_between")}</p>
             {!isEditing && (
               <p className="text-sm text-gray-500">
-                ₪
+                {getCurrencySymbol(expense.currency)}
                 {formatAmount(
                   Number((expense.amount / expense.splits.length).toFixed(2)),
                 )}{" "}

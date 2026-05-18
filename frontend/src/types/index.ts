@@ -38,6 +38,7 @@ export interface Expense {
   id: number;
   description: string;
   amount: number;
+  currency: string;
   date: string;
   paidBy: User;
   splits: ExpenseSplit[];

@@ -12,6 +12,7 @@ export class ExpensesService {
     description: string,
     amount: number,
     memberIds: number[],
+    currency: string = 'ILS',
   ) {
     const splitAmount = amount / memberIds.length;
 
@@ -21,6 +22,7 @@ export class ExpensesService {
         paidById,
         description,
         amount,
+        currency,
         splits: {
           create: memberIds.map((userId) => ({
             userId,

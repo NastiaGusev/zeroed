@@ -74,13 +74,22 @@ export default function GroupPage() {
   });
 
   const { mutate: addExpense, isPending: addingExpense } = useMutation({
-    mutationFn: () =>
-      createExpense(groupId, description, Number(amount), selectedMembers),
+    mutationFn: () => {
+      console.log("currency being sent:", currency);
+      return createExpense(
+        groupId,
+        description,
+        Number(amount),
+        selectedMembers,
+        currency,
+      );
+    },
     onSuccess: () => {
       invalidateExpenses();
       setDescription("");
       setAmount("");
       setSelectedMembers([]);
+      setCurrency("ILS");
       setShowAddExpense(false);
     },
   });
@@ -143,6 +152,7 @@ export default function GroupPage() {
 
   const [isEditingGroup, setIsEditingGroup] = useState(false);
   const [editGroupName, setEditGroupName] = useState(group?.name ?? "");
+  const [currency, setCurrency] = useState("ILS");
 
   const { mutate: saveGroupName, isPending: savingGroupName } = useMutation({
     mutationFn: () => updateGroup(groupId, editGroupName),
@@ -248,6 +258,8 @@ export default function GroupPage() {
           setDescription={setDescription}
           amount={amount}
           setAmount={setAmount}
+          currency={currency}
+          setCurrency={setCurrency}
           selectedMembers={selectedMembers}
           toggleMember={toggleMember}
           members={group.members}
