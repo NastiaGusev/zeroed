@@ -58,7 +58,11 @@ export default function ExpenseDetailModal({
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm text-gray-500">Split between</p>
             <p className="text-sm text-gray-500">
-              ₪{(expense.amount / expense.splits.length).toFixed(2)} each
+              ₪
+              {formatAmount(
+                Number((expense.amount / expense.splits.length).toFixed(2)),
+              )}{" "}
+              each
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
