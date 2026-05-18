@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Expense, GroupMember } from "../../types";
 import Modal from "../Modal";
 import { formatAmount } from "../../utils/format";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   expense: Expense;
@@ -47,6 +48,8 @@ export default function ExpenseDetailModal({
   onSaveEdit,
   isPendingEdit,
 }: Props) {
+  const { t } = useTranslation();
+
   const [isEditing, setIsEditing] = useState(false);
   const [editDescription, setEditDescription] = useState(expense.description);
   const [editMembers, setEditMembers] = useState<number[]>(
@@ -100,21 +103,21 @@ export default function ExpenseDetailModal({
     <Modal title={title} onClose={onClose}>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">Total amount</span>
+          <span className="text-gray-500">{t("total_amount")}</span>
           <span className="text-xl font-bold text-gray-900">
             ₪{formatAmount(expense.amount)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">Paid by</span>
+          <span className="text-gray-500">{t("paid_by")}</span>
           <span className="font-medium text-gray-900">
             {expense.paidBy.name}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">Date</span>
+          <span className="text-gray-500">{t("date")}</span>
           <span className="text-gray-700">
             {new Date(expense.date).toLocaleDateString("en-IL", {
               day: "numeric",
@@ -126,14 +129,14 @@ export default function ExpenseDetailModal({
 
         <div className="border-t border-gray-100 pt-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Split between</p>
+            <p className="text-sm text-gray-500">{t("split_between")}</p>
             {!isEditing && (
               <p className="text-sm text-gray-500">
                 ₪
                 {formatAmount(
                   Number((expense.amount / expense.splits.length).toFixed(2)),
                 )}{" "}
-                each
+                {t("each")}
               </p>
             )}
           </div>
@@ -189,7 +192,7 @@ export default function ExpenseDetailModal({
                 }}
                 className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 onClick={handleSave}
@@ -198,12 +201,12 @@ export default function ExpenseDetailModal({
                 }
                 className="flex-1 bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-800 transition disabled:opacity-50"
               >
-                {isPendingEdit ? "Saving..." : "Save"}
+                {isPendingEdit ? t("saving") : t("save")}
               </button>
             </div>
             <button
               onClick={() => {
-                if (confirm("Delete this expense? This cannot be undone.")) {
+                if (confirm(t("delete_expense_confirm"))) {
                   onDelete(expense.id);
                 }
               }}
@@ -224,7 +227,7 @@ export default function ExpenseDetailModal({
                 <path d="M10 11v6M14 11v6" />
                 <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
               </svg>
-              Delete expense
+              {t("delete_expense")}
             </button>
           </div>
         ) : null}

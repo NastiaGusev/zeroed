@@ -1,5 +1,6 @@
 import type { GroupMember } from "../../types";
 import Modal from "../Modal";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onClose: () => void;
@@ -12,7 +13,6 @@ interface Props {
   selectedMembers: number[];
   toggleMember: (id: number) => void;
   members: GroupMember[];
-  title?: string;
 }
 
 export default function AddExpenseModal({
@@ -26,8 +26,9 @@ export default function AddExpenseModal({
   selectedMembers,
   toggleMember,
   members,
-  title,
 }: Props) {
+  const { t } = useTranslation();
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Strip everything except digits and one decimal point
     const raw = e.target.value.replace(/[^0-9.]/g, "");
@@ -45,14 +46,14 @@ export default function AddExpenseModal({
     : "";
 
   return (
-    <Modal title={title ?? "Add expense"} onClose={onClose}>
+    <Modal title={t("add_expense")} onClose={onClose}>
       <div className="space-y-4">
         <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          placeholder="Description (e.g. Dinner)"
+          placeholder={t("description_placeholder")}
           autoFocus
         />
         <div className="relative">
@@ -69,7 +70,7 @@ export default function AddExpenseModal({
           />
         </div>
         <div>
-          <p className="text-sm text-gray-500 mb-2">Split between:</p>
+          <p className="text-sm text-gray-500 mb-2">{t("split_between")}</p>
           <div className="flex flex-wrap gap-2">
             {members.map((member) => (
               <button
@@ -93,7 +94,7 @@ export default function AddExpenseModal({
           }
           className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
         >
-          {isPending ? "Saving..." : title ? "Save changes" : "Add expense"}
+          {isPending ? t("saving") : t("add_expense")}
         </button>
       </div>
     </Modal>

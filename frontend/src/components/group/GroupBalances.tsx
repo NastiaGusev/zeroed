@@ -1,5 +1,6 @@
 import type { Transaction } from "../../types";
 import { formatAmount } from "../../utils/format";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   myOwed: Transaction[];
@@ -14,27 +15,37 @@ export default function GroupBalances({
   totalOwedToMe,
   totalIOwe,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-        My Balance
+        {t("my_balance")}
       </h2>
       {totalOwedToMe === 0 && totalIOwe === 0 ? (
-        <p className="text-green-600 font-medium">You were zeroed out! ✅</p>
+        <p className="text-green-600 font-medium">{t("zeroed_out")}</p>
       ) : (
         <div className="space-y-2">
-          {myOwed.map((t: Transaction, i: number) => (
+          {myOwed.map((transaction: Transaction, i: number) => (
             <p key={i} className="text-gray-700">
-              <span className="font-medium text-green-600">{t.from.name}</span>
-              {" owes you "}
-              <span className="font-semibold">₪{formatAmount(t.amount)}</span>
+              <span className="font-medium text-green-600">
+                {transaction.from.name}
+              </span>{" "}
+              {t("owes_you")}{" "}
+              <span className="font-semibold">
+                ₪{formatAmount(transaction.amount)}
+              </span>
             </p>
           ))}
-          {myDebts.map((t: Transaction, i: number) => (
+          {myDebts.map((transaction: Transaction, i: number) => (
             <p key={i} className="text-gray-700">
-              {"You owe "}
-              <span className="font-medium text-red-500">{t.to.name}</span>{" "}
-              <span className="font-semibold">₪{formatAmount(t.amount)}</span>
+              {t("you_owe")}{" "}
+              <span className="font-medium text-red-500">
+                {transaction.to.name}
+              </span>{" "}
+              <span className="font-semibold">
+                ₪{formatAmount(transaction.amount)}
+              </span>
             </p>
           ))}
         </div>

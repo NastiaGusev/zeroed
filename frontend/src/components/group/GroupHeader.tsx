@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 interface Props {
   name: string;
   isSettled: boolean;
@@ -45,6 +47,8 @@ export default function GroupHeader({
   isSaving,
   onBack,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-8">
       <div className="flex items-center gap-3">
@@ -75,7 +79,7 @@ export default function GroupHeader({
 
         {isSettled && (
           <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-            Settled ✅
+            {t("settled")}
           </span>
         )}
       </div>
@@ -87,14 +91,14 @@ export default function GroupHeader({
               onClick={onCancel}
               className="flex-1 border border-gray-200 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition"
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               onClick={onSave}
               disabled={isSaving || !editName}
               className="flex-1 bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-800 transition disabled:opacity-50"
             >
-              {isSaving ? "Saving..." : "Save"}
+              {isSaving ? t("saving") : t("save")}
             </button>
           </div>
           <button
@@ -116,7 +120,7 @@ export default function GroupHeader({
               <path d="M10 11v6M14 11v6" />
               <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
             </svg>
-            Delete group
+            {t("delete_group")}
           </button>
         </div>
       )}

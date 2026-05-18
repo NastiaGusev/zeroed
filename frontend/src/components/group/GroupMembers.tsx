@@ -1,4 +1,5 @@
 import type { GroupMember } from "../../types";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   members: GroupMember[];
@@ -7,18 +8,20 @@ interface Props {
 }
 
 export default function GroupMembers({ members, isSettled, onInvite }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-          Members
+          {t("members")}
         </h2>
         {!isSettled && (
           <button
             onClick={onInvite}
             className="text-xs font-medium px-3 py-1 rounded-full border border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 transition"
           >
-            + Invite
+            {t("invite")}
           </button>
         )}
       </div>

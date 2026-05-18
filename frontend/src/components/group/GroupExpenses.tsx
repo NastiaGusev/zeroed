@@ -1,5 +1,6 @@
 import type { Expense } from "../../types";
 import { formatAmount } from "../../utils/format";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   expenses: Expense[];
@@ -14,18 +15,20 @@ export default function GroupExpenses({
   onAdd,
   onSelect,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-          Expenses
+          {t("expenses")}
         </h2>
         {!isSettled && (
           <button
             onClick={onAdd}
             className="text-xs font-medium px-3 py-1 rounded-full border border-gray-300 text-gray-700 hover:border-gray-900 hover:text-gray-900 transition"
           >
-            + Add
+            {t("add")}
           </button>
         )}
       </div>
@@ -42,7 +45,7 @@ export default function GroupExpenses({
                   {expense.description}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Paid by {expense.paidBy.name}
+                  {t("paid_by")} {expense.paidBy.name}
                 </p>
               </div>
               <p className="font-semibold text-gray-900">
@@ -52,7 +55,7 @@ export default function GroupExpenses({
           ))}
         </div>
       ) : (
-        <p className="text-gray-400 text-sm">No expenses yet.</p>
+        <p className="text-gray-400 text-sm">{t("no_expenses")}</p>
       )}
     </div>
   );

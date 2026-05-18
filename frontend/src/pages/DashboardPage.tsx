@@ -4,9 +4,13 @@ import { getUserGroups } from "../api/groups";
 import { getPendingInvites, acceptInvite, declineInvite } from "../api/invites";
 import { getMe } from "../api/auth";
 import { useState } from "react";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import Modal from "../components/Modal";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -57,20 +61,25 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold text-gray-900">Zeroed 💸</h1>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-gray-500 hover:text-gray-900"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <button
+              onClick={handleLogout}
+              className="text-sm text-gray-500 hover:text-gray-900"
+            >
+              {t("logout")}
+            </button>
+          </div>
         </div>
-        <p className="text-gray-500 mb-8">Welcome back, {me?.name}</p>
+        <p className="text-gray-500 mb-8">
+          {t("welcome_back", { name: me?.name })}
+        </p>
 
         {/* Pending Invites */}
         {pendingInvites && pendingInvites.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              Pending Invites
+              {t("pending_invites")}
             </h2>
             <div className="space-y-3">
               {pendingInvites.map((invite) => (
@@ -86,13 +95,13 @@ export default function DashboardPage() {
                       onClick={() => accept(invite.id)}
                       className="text-sm bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition"
                     >
-                      Accept
+                      {t("accept")}
                     </button>
                     <button
                       onClick={() => decline(invite.id)}
                       className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-200 transition"
                     >
-                      Decline
+                      {t("decline")}
                     </button>
                   </div>
                 </div>
@@ -105,7 +114,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              My Groups
+              {t("my_groups")}
             </h2>
             <button
               onClick={() => setShowFilter(true)}
@@ -126,8 +135,10 @@ export default function DashboardPage() {
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
               </svg>
               {filter !== "all"
-                ? filter.charAt(0).toUpperCase() + filter.slice(1)
-                : "Filter"}
+                ? filter === "active"
+                  ? t("active_only")
+                  : t("settled_only")
+                : t("filter")}
             </button>
           </div>
 
@@ -153,7 +164,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2">
                       {group.settledAt && (
                         <span className="text-xs text-green-600 font-medium">
-                          Settled
+                          {t("settled")}
                         </span>
                       )}
                       <span className="text-gray-400">→</span>
@@ -163,7 +174,13 @@ export default function DashboardPage() {
               </div>
             ) : (
               <p className="text-gray-400 text-sm">
-                No {filter !== "all" ? filter : ""} groups.
+                <p className="text-gray-400 text-sm">
+                  {filter === "active"
+                    ? t("no_active_groups")
+                    : filter === "settled"
+                      ? t("no_settled_groups")
+                      : t("no_groups")}
+                </p>
               </p>
             );
           })()}
@@ -172,14 +189,14 @@ export default function DashboardPage() {
             onClick={() => navigate("/groups/new")}
             className="w-full mt-3 text-sm border border-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition"
           >
-            + New Group
+            {t("new_group")}
           </button>
         </div>
       </div>
 
       {/* Filter Modal */}
       {showFilter && (
-        <Modal title="Filter groups" onClose={() => setShowFilter(false)}>
+        <Modal title={t("filter_groups")} onClose={() => setShowFilter(false)}>
           <div className="space-y-2">
             {(["all", "active", "settled"] as const).map((f) => (
               <button
@@ -196,10 +213,10 @@ export default function DashboardPage() {
               >
                 <span className="capitalize">
                   {f === "all"
-                    ? "All groups"
+                    ? t("all_groups")
                     : f === "active"
-                      ? "Active only"
-                      : "Settled only"}
+                      ? t("active_only")
+                      : t("settled_only")}
                 </span>
                 {filter === f && <span>✓</span>}
               </button>

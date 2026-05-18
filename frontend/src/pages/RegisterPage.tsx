@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../api/auth";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -20,7 +24,7 @@ export default function RegisterPage() {
       localStorage.setItem("token", access_token);
       navigate("/dashboard");
     } catch {
-      setError("Something went wrong. Try a different email.");
+      setError(t("something_went_wrong"));
     } finally {
       setLoading(false);
     }
@@ -29,13 +33,16 @@ export default function RegisterPage() {
   return (
     <div className="fixed inset-0 bg-gray-50 flex items-center justify-center px-4 overflow-y-auto">
       <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md">
+        <div className="flex justify-end mb-2">
+          <LanguageSwitcher />
+        </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Zeroed 💸</h1>
-        <p className="text-gray-500 mb-8">Create your account.</p>
+        <p className="text-gray-500 mb-8">{t("ragister_tagline")}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name
+              {t("name")}
             </label>
             <input
               type="text"
@@ -49,8 +56,10 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number{" "}
-              <span className="text-gray-400 text-xs">(optional)</span>
+              {t("phone")}{" "}
+              <span className="text-gray-400 text-xs">
+                ({t("phone_optional")})
+              </span>
             </label>
             <input
               type="tel"
@@ -63,7 +72,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              {t("email")}
             </label>
             <input
               type="email"
@@ -77,7 +86,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              {t("password")}
             </label>
             <input
               type="password"
@@ -97,14 +106,14 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Create account"}
+            {loading ? t("creating_account") : t("create_account")}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{" "}
+          {t("already_have_account")}{" "}
           <Link to="/login" className="text-black font-medium underline">
-            Sign in
+            {t("login")}
           </Link>
         </p>
       </div>

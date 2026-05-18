@@ -19,8 +19,11 @@ import GroupBalances from "../components/group/GroupBalances";
 import GroupMembers from "../components/group/GroupMembers";
 import GroupExpenses from "../components/group/GroupExpenses";
 import { updateGroup } from "../api/groups";
+import { useTranslation } from "react-i18next";
 
 export default function GroupPage() {
+  const { t } = useTranslation();
+
   const { id } = useParams();
   const groupId = Number(id);
   const navigate = useNavigate();
@@ -184,7 +187,7 @@ export default function GroupPage() {
           onSave={() => saveGroupName()}
           onCancel={() => setIsEditingGroup(false)}
           onDelete={() => {
-            if (confirm("Delete this group? This cannot be undone.")) {
+            if (confirm(t("delete_group_confirm"))) {
               removeGroup();
             }
           }}
@@ -217,18 +220,14 @@ export default function GroupPage() {
         {!isSettled && balances && balances.length > 0 && (
           <button
             onClick={() => {
-              if (
-                confirm(
-                  "Mark this group as fully settled? This cannot be undone.",
-                )
-              ) {
+              if (confirm(t("settle_confirm"))) {
                 settle();
               }
             }}
             disabled={settling}
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition disabled:opacity-50 mt-4"
           >
-            {settling ? "Settling..." : "Settle Up 💸"}
+            {settling ? t("settling") : t("settle_up")}
           </button>
         )}
       </div>
