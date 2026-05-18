@@ -33,14 +33,17 @@ export default function GroupPage() {
   const { data: group, isLoading } = useQuery({
     queryKey: ["group", groupId],
     queryFn: () => getGroup(groupId),
+    refetchInterval: 5000,
   });
   const { data: expenses } = useQuery({
     queryKey: ["expenses", groupId],
     queryFn: () => getExpenses(groupId),
+    refetchInterval: 1000,
   });
   const { data: balances } = useQuery({
     queryKey: ["balances", groupId],
     queryFn: () => getBalances(groupId),
+    refetchInterval: 1000,
   });
 
   const isSettled = !!group?.settledAt;

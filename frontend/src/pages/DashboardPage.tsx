@@ -20,11 +20,13 @@ export default function DashboardPage() {
   const { data: userGroups } = useQuery({
     queryKey: ["userGroups"],
     queryFn: getUserGroups,
+    refetchInterval: 5000,
   });
 
   const { data: pendingInvites } = useQuery({
     queryKey: ["pendingInvites"],
     queryFn: getPendingInvites,
+    refetchInterval: 5000,
   });
 
   const { mutate: accept } = useMutation({
