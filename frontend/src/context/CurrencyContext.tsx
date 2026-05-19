@@ -1,9 +1,5 @@
 import { createContext } from "react";
 
-interface Rates {
-  [currency: string]: number;
-}
-
 export interface CurrencyContextType {
   displayCurrency: string;
   setDisplayCurrency: (c: string) => void;
