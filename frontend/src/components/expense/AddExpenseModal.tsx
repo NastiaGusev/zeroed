@@ -1,7 +1,8 @@
 import type { GroupMember } from "../../types";
-import Modal from "../Modal";
+import Modal from "../ui/Modal";
 import { useTranslation } from "react-i18next";
 import { CURRENCIES, getCurrencySymbol } from "../../constants/currencies";
+import SelectDropdown from "../ui/SelectDropdown";
 
 interface Props {
   onClose: () => void;
@@ -75,33 +76,15 @@ export default function AddExpenseModal({
               placeholder="0"
             />
           </div>
-          <div className="relative">
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="appearance-none border border-gray-300 rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-black text-sm text-gray-700 bg-white w-24"
-            >
-              {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </div>
-          </div>
+          <SelectDropdown
+            value={currency}
+            onChange={setCurrency}
+            options={CURRENCIES.map((c) => ({
+              value: c.code,
+              label: `${c.symbol} ${c.code}`,
+            }))}
+            className="text-sm py-2 border-gray-300"
+          />
         </div>
 
         <div>

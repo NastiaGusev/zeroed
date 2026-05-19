@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Expense, GroupMember } from "../../types";
-import Modal from "../Modal";
+import Modal from "../ui/Modal";
 import { formatAmount } from "../../utils/format";
 import { useTranslation } from "react-i18next";
 import { getCurrencySymbol } from "../../constants/currencies";

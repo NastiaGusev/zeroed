@@ -1,6 +1,7 @@
 import type { Transaction } from "../../types";
 import { formatAmount } from "../../utils/format";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../context/UseCurrency";
 
 interface Props {
   myOwed: Transaction[];
@@ -16,6 +17,7 @@ export default function GroupBalances({
   totalIOwe,
 }: Props) {
   const { t } = useTranslation();
+  const { convert, symbol, displayCurrency } = useCurrency();
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
@@ -33,7 +35,10 @@ export default function GroupBalances({
               </span>{" "}
               {t("owes_you")}{" "}
               <span className="font-semibold">
-                ₪{formatAmount(transaction.amount)}
+                {symbol(displayCurrency)}
+                {formatAmount(
+                  Number(convert(transaction.amount, "ILS").toFixed(2)),
+                )}
               </span>
             </p>
           ))}
@@ -44,7 +49,10 @@ export default function GroupBalances({
                 {transaction.to.name}
               </span>{" "}
               <span className="font-semibold">
-                ₪{formatAmount(transaction.amount)}
+                {symbol(displayCurrency)}
+                {formatAmount(
+                  Number(convert(transaction.amount, "ILS").toFixed(2)),
+                )}
               </span>
             </p>
           ))}

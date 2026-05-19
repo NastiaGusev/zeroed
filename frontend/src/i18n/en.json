@@ -73,5 +73,7 @@
   "send_invite": "Send Invite",
   "sending": "Sending...",
   "loading": "Loading...",
-  "language": "Language"
+  "language": "Language",
+  "currency": "Currency",
+  "currency_tooltip": "Balances and settlements will be shown in this currency"
 }

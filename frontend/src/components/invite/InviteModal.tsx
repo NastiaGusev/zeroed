@@ -1,4 +1,4 @@
-import Modal from "../Modal";
+import Modal from "../ui/Modal";
 import { useTranslation } from "react-i18next";
 
 interface Props {

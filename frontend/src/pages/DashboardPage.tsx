@@ -4,7 +4,7 @@ import { getUserGroups } from "../api/groups";
 import { getPendingInvites, acceptInvite, declineInvite } from "../api/invites";
 import { getMe } from "../api/auth";
 import { useState } from "react";
-import Modal from "../components/Modal";
+import Modal from "../components/ui/Modal";
 import { useTranslation } from "react-i18next";
 import AccountMenu from "../components/AccountMenu";
 
@@ -191,13 +191,13 @@ export default function DashboardPage() {
               </div>
             ) : (
               <p className="text-gray-400 text-sm">
-                <p className="text-gray-400 text-sm">
+                <span className="text-gray-400 text-sm">
                   {filter === "active"
                     ? t("no_active_groups")
                     : filter === "settled"
                       ? t("no_settled_groups")
                       : t("no_groups")}
-                </p>
+                </span>
               </p>
             );
           })()}
